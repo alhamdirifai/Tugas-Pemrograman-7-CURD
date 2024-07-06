@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta nama="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Simple Crud</title>
+  </head>
+  <body
+    class="flex flex-col max-w-xl m-auto items-center justify-center h-screen"
+  >
+    <p class="text-xl font-bold text-center mb-8">Kelas Pemrograman Web</p>
+
+    <table id="siswaTable" class="table-auto w-full max-w-lg mx-auto">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Nilai</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="text-center"></tbody>
+    </table>
+    <div class="flex flex-col space-y-2 mt-8">
+      <p class="text-xl font-bold">Tambah Siswa</p>
+      <form onsubmit="event.preventDefault(); handleAddSiswa()">
+        <input type="text" class="border-2 p-2" placeholder="nama" id="nama" />
+        <input
+          type="number"
+          class="border-2 p-2"
+          placeholder="nilai"
+          id="nilai"
+        />
+        <button class="bg-blue-500 text-white p-2 rounded-md" type="submit">
+          Tambah
+        </button>
+      </form>
+    </div>
+    <div class="flex flex-col space-y-4 mt-8">
+      <p class="text-lg">
+        Nilai rata-rata siswa: <span id="rataRata" class="font-bold"></span>
+      </p>
+      <p class="text-lg">
+        Siswa nilai tertinggi:
+        <span id="siswaTertinggi" class="font-bold"></span>
+      </p>
+      <p class="text-lg">
+        Siswa nilai terendah: <span id="siswaTerendah" class="font-bold"></span>
+      </p>
+    </div>
+  </body>
+  <script>
+    const siswa = [
+      {
+        nama: "Toni",
+        nilai: 80,
+      },
+      {
+        nama: "Budi",
+        nilai: 90,
+      },
+      {
+        nama: "Udin",
+        nilai: 50,
+      },
+    ];
+
+    const handleAddSiswa = () => {
+      const nama = document.querySelector("#nama").value;
+      const nilai = document.querySelector("#nilai").value;
+      siswa.push({ nama, nilai: Number(nilai) });
+      renderTable();
+    };
+
+    const handleDeleteSiswa = (index) => {
+      siswa.splice(index, 1);
+      renderTable();
+    };
+
+    const handleUpdateNilai = (index) => {
+      const newNilai = prompt("Masukkan nilai baru:");
+      if (newNilai !== null) {
+        siswa[index].nilai = Number(newNilai);
+        renderTable();
+      }
+    };
+
+    const renderTable = () => {
+      const tableBody = document.querySelector("#siswaTable tbody");
+
+      tableBody.innerHTML = "";
+      siswa.forEach((s, index) => {
+        const row = document.createElement("tr");
+        const namaCell = document.createElement("td");
+        namaCell.textContent = s.nama;
+        const nilaiCell = document.createElement("td");
+        nilaiCell.textContent = s.nilai;
+        const actionCell = document.createElement("td");
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Hapus";
+        deleteButton.className = "bg-red-500 text-white p-1 rounded-md";
+        deleteButton.onclick = () => handleDeleteSiswa(index);
+        const updateButton = document.createElement("button");
+        updateButton.textContent = "Update Nilai";
+        updateButton.className = "bg-blue-500 text-white p-1 rounded-md ml-2";
+        updateButton.onclick = () => handleUpdateNilai(index);
+        actionCell.appendChild(deleteButton);
+        actionCell.appendChild(updateButton);
+        row.appendChild(namaCell);
+        row.appendChild(nilaiCell);
+        row.appendChild(actionCell);
+        tableBody.appendChild(row);
+      });
+
+      const rataRata =
+        siswa.reduce((acc, s) => acc + s.nilai, 0) / siswa.length;
+      document.querySelector("#rataRata").textContent = rataRata.toFixed(2);
+      const siswaTertinggi = siswa.reduce((acc, s) =>
+        acc.nilai > s.nilai ? acc : s
+      );
+      document.querySelector("#siswaTertinggi").textContent =
+        siswaTertinggi.nama;
+      const siswaTerendah = siswa.reduce((acc, s) =>
+        acc.nilai < s.nilai ? acc : s
+      );
+      document.querySelector("#siswaTerendah").textContent = siswaTerendah.nama;
+    };
+
+    renderTable();
+  </script>
+</html>
